@@ -12,9 +12,12 @@ public partial class Player : CharacterBody2D
 
 	private AnimatedSprite2D AnimatedSprite2D = null; 
 
+	private Vector2 ScreenSize;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		ScreenSize = GetViewportRect().Size;
 		AnimatedSprite2D = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 	}
 
@@ -24,32 +27,28 @@ public partial class Player : CharacterBody2D
 		var velocity = inputVelocity(delta);
 		velocity = addGravity(velocity, delta);	// Player movement vector
 
-		GD.Print($"Velocity: X - {velocity.X}, Y - {velocity.Y}");
-
-		updateAnimation(velocity);
-
 		velocity.Y += this.Velocity.Y;
 		this.Velocity = velocity;
 		MoveAndSlide();
+
+		updateAnimation(this.Velocity);
+
+		clampPosition();
 	}
 
 	private Vector2 inputVelocity(double delta) 
 	{
 		var velocity = Vector2.Zero;	// Player movement vector
 
-		if (Input.IsActionPressed("move_left")) 
-		{
+		if (Input.IsActionPressed("move_left")) {
 			// GD.Print("Move Left");
 			velocity.X -= 1;
 		}
-		else if (Input.IsActionPressed("move_right")) 
-		{
-			// GD.Print("Move Right");
+		else if (Input.IsActionPressed("move_right")) {
 			velocity.X += 1;
 		}
 
-		if (Input.IsActionJustPressed("jump") && IsOnFloor()) 
-		{
+		if (Input.IsActionJustPressed("jump") && IsOnFloor()) {
 			velocity.Y = -jumpVelocity;
 		}
 
@@ -92,8 +91,11 @@ public partial class Player : CharacterBody2D
 		}
 	}
 
-	private void updatePosition(Vector2 velocity, double delta) 
+	private void clampPosition() 
 	{
-		Position += velocity * (float)delta;
+		var position = Position;
+		position.X = Mathf.Clamp(position.X, 0, ScreenSize.X);
+		position.Y = Mathf.Clamp(position.Y, 0, ScreenSize.Y);
+		Position = position;
 	}
 }
