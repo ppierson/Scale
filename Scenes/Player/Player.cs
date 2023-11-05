@@ -6,7 +6,7 @@ public partial class Player : CharacterBody2D
 	[Export]
 	public int MovementSpeed { get; set; } = 250;
 	[Export]
-	public int GravityVelocity { get; set; } = 600;
+	public int GravityVelocity { get; set; } = 1000;
 	[Export]
 	public int jumpVelocity { get; set; } = 500;
 
